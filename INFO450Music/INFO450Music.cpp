@@ -37,11 +37,10 @@ public:
 	void setFilename(char f[]);
 	void readList();
 	void addNodeToEnd(node *nptr);
-	void showList();
+	void showList();;
 	void playSong();
 	void skipSong();
-	void deleteSong();
-	node * findItem(int i);
+	int deleteSong();
 };
 
 linkedList::linkedList()
@@ -89,7 +88,7 @@ void linkedList::showList()
 	cout << "--------------------------" << endl;
 	if (ptr == NULL)
 	{
-		cout << "list is empty " << endl;
+		cout << "<ALERt> Nothing in this file! " << endl;
 		return;
 	}
 	while (ptr != NULL)
@@ -98,6 +97,8 @@ void linkedList::showList()
 		ptr = ptr->next;
 	}
 }
+
+
 void linkedList::playSong()
 {
 	char response[20];
@@ -132,20 +133,51 @@ void linkedList::skipSong()
 			cout << "Playing " << ptr->title << " by " << ptr->artist << endl;
 			cout << "Stopped playing " << ptr->title << " by " << ptr->artist << endl;
 			ptr = ptr->next;
+			if (ptr->title )
 			cout << "Now playing " << ptr->title << " by " << ptr->artist << endl;
 		}
 		ptr = ptr->next;
 	}
+	
 }
-void linkedList::deleteSong()
+int linkedList::deleteSong()
 {
 	char response[20];
-	node *ptr;
-	ptr = head;
+	node *ptr = head;
 	cout << "Type the song you want to delete (case sensitive)" << endl;
 	cin.clear();
 	cin.ignore();
 	gets_s(response);
+
+	if (ptr == NULL) 
+		return -1;
+	if (strcmp(response, ptr->title) == 0)
+	{
+		if (head == tail)
+		{
+			head = NULL;
+			tail = NULL;
+		}
+		else
+			head = head->next;
+			delete ptr;
+			return 0;
+	}
+
+	while (ptr != NULL)
+	{
+		if (ptr->next && (strcmp((ptr->next)->title, response) == 0))
+		{
+			if (tail == ptr->next)
+				tail = ptr;
+			node *tbd = ptr->next;
+			ptr->next = (ptr->next)->next;
+			delete tbd;
+			return 0;
+		}
+		ptr = ptr->next;
+	}
+	return -1;
 }
 void linkedList::addNodeToEnd(node *ptr)
 {
@@ -164,61 +196,6 @@ void linkedList::addNodeToEnd(node *ptr)
 
 
 
-node * linkedList::findItem(int i)
-{
-	node *ptr;
-	ptr = head;
-	while (ptr != NULL)
-	{
-		if (ptr->title == ptr->artist)
-		{
-			cout << "found it!" << endl;
-			return ptr;
-		}
-		ptr = ptr->next;
-	}
-
-	cout << "Not found" << endl;
-	return NULL;
-}
-
-
-//int linkedList::removeNode(int i)
-//{
-//	node *ptr = head;
-//	if (ptr == NULL)  // empty list
-//		return -1;
-//
-//	// if node is at the head
-//	if (head->title == ptr->artist)
-//	{
-//		//if only 1 node in the list
-//		if (head == tail)
-//		{
-//			head = NULL;
-//			tail = NULL;
-//		}
-//		else
-//			head = head->next;
-//		delete ptr;
-//		return 0;
-//	}
-//
-//	while (ptr != NULL)
-//	{
-//		if (ptr->next && (ptr->next)->title == ptr->artist)
-//		{
-//			if (tail == ptr->next)
-//				tail = ptr;
-//			node *tbd = ptr->next;
-//			ptr->next = (ptr->next)->next;
-//			delete tbd;
-//			return 0;
-//		}
-//		ptr = ptr->next;
-//	}
-//	return -1;
-//}
 
 int main()
 {
@@ -261,7 +238,8 @@ int main()
 		}
 		else if ((response == 'D') || (response == 'd'))
 		{
-			mylist->deleteSong();
+			if (mylist->deleteSong())
+				mylist->showList();
 			answer = true;
 		}
 		else if ((response == 'Q') || (response == 'q'))
